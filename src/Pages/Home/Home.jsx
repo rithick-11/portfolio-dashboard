@@ -27,7 +27,7 @@ const Home = () => {
 
   const getVistCount = async () => {
     setApiRes((pre) => ({ ...pre, status: apiStatusconstan.loading }));
-    const countApi = `${domainUrl.loaclHost}/admin/vist-count`;
+    const countApi = `${domainUrl.cloud}/admin/vist-count`;
     const option = {
       method: "get",
     };
