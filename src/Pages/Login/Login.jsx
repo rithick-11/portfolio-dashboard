@@ -80,7 +80,7 @@ const Login = (props) => {
     e.preventDefault();
     setApiRes((prev) => ({ ...prev, status: apiStatusconstan.loading }));
 
-    const loginApi = `${domainUrl.loaclHost}/admin/login`;
+    const loginApi = `${domainUrl.cloud}/admin/login`;
     const option = {
       method: "POST",
       body: JSON.stringify({
