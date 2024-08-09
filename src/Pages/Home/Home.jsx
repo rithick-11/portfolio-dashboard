@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
 import { Card } from "../../StyledComponents/StyledComponents";
 import RecentVist from "../../Components/RecentVist/RecentVist";
+import { Link } from "react-router-dom";
 
 const domainUrl = {
   loaclHost: "http://localhost:3010",
@@ -102,6 +103,10 @@ const Home = () => {
         <h1 className="text-lg font-light mb-4">Recent Vist</h1>
         {renderRecentVist()}
       </Card>
+
+      <Link to="/user" className="text-white inline-block mt-5" >User List</Link>
+      <br />
+      <Link to="/project" className="text-white inline-block mt-5" >Project List</Link>
     </section>
   );
 };
