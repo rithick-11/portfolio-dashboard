@@ -104,7 +104,7 @@ const Home = () => {
         {renderRecentVist()}
       </Card>
 
-      <Link to="/user" className="text-white inline-block mt-5" >User List</Link>
+      <Link to="/users" className="text-white inline-block mt-5" >User List</Link>
       <br />
       <Link to="/project" className="text-white inline-block mt-5" >Project List</Link>
     </section>

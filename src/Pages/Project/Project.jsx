@@ -55,7 +55,7 @@ const Users = () => {
                     <h1>Name: {each.name}</h1>
                     <p>{each.likes}</p>
                     </div>
-                    <Link to={`project/${each.id}`} className="inline-block">More</Link>
+                    <Link to={`/project/${each.id}`} className="inline-block">More</Link>
                 </li>)}
             </ul>
         </div>
