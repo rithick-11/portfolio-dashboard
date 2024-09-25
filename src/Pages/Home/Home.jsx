@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 const domainUrl = {
   loaclHost: "http://localhost:3010",
   cloud: "https://portfolio-server-9ly0.onrender.com",
+  vercel:'https://portfolio-server-pink-seven.vercel.app'
 };
 
 const apiStatusconstan = {
@@ -28,7 +29,7 @@ const Home = () => {
 
   const getVistCount = async () => {
     setApiRes((pre) => ({ ...pre, status: apiStatusconstan.loading }));
-    const countApi = `${domainUrl.cloud}/admin/vist-count`;
+    const countApi = `${domainUrl.vercel}/admin/vist-count`;
     const option = {
       method: "get",
     };

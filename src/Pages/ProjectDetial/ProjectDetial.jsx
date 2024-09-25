@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 const domainUrl = {
   loaclHost: "http://localhost:3010",
   cloud: "https://portfolio-server-9ly0.onrender.com",
+  vercel:'https://portfolio-server-pink-seven.vercel.app'
 };
 
 const apiStatusconstan = {
@@ -29,7 +30,7 @@ const ProjectDetial = () => {
   const getUsersData = async () => {
     setApiRes((pre) => ({ ...pre, status: apiStatusconstan.loading }));
     try {
-      const res = await fetch(`${domainUrl.cloud}/admin/project/${id}`);
+      const res = await fetch(`${domainUrl.vercel}/admin/project/${id}`);
       const data = await res.json();
       setApiRes((pre) => ({
         ...pre,

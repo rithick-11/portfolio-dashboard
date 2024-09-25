@@ -4,6 +4,7 @@ import { ColorRing } from "react-loader-spinner";
 const domainUrl = {
   loaclHost: "http://localhost:3010",
   cloud: "https://portfolio-server-9ly0.onrender.com",
+  vercel:'https://portfolio-server-pink-seven.vercel.app'
 };
 
 const apiStatusconstan = {
@@ -28,7 +29,7 @@ const Users = () => {
   const getUsersData = async () => {
     setApiRes((pre) => ({ ...pre, status: apiStatusconstan.loading }));
     try {
-      const res = await fetch(`${domainUrl.cloud}/admin/user-detial`);
+      const res = await fetch(`${domainUrl.vercel}/admin/user-detial`);
       const data = await res.json();
       setApiRes((pre) => ({
         ...pre,
