@@ -1,29 +1,26 @@
-import React from 'react'
+import React from "react";
+import { format } from "date-fns";
 
-function convertUTCToIST(dateString) {
-
-
-    let istTime = new Date(dateString);
-
-    // istTime.setHours(istTime.getHours() - 5)
-    // istTime.setMinutes(istTime.getMinutes() - 30)
-
-    return  istTime.toLocaleString()
-}
-
-// // Example usage
-// let utcDate = "2024-07-15T14:11:24Z"; // UTC date and time
-// let istDate = convertUTCToIST(utcDate);
-// console.log("IST Date and Time: " + istDate.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }));
-
-
-const RecentVist = ({data}) => {
-    let dates = [...data].reverse().slice(0,20)
+const RecentVist = ({ data }) => {
+  let dates = [...data].reverse().slice(0, 20);
   return (
-    <ul className=' h-64 overflow-y-auto'>
-        {dates.map((time, i) => <li>{convertUTCToIST(time)}</li>)}
+    <ul className=" h-64 overflow-y-auto">
+      <li className="grid grid-cols-6 gap-1 text-center border rounded-t-md font-semibold">
+        <p className="col-span-2 px-2 py-1">Time</p>
+        <h1 className=" px-2 py-1">Location</h1>
+        <h1 className=" px-2 py-1">Platform</h1>
+        <h1 className="col-span-2 px-2 py-1">Browser</h1>
+      </li>
+      {dates.map(({ date, record }, i) => (
+        <li className="grid grid-cols-6 gap-1 text-center border font-light">
+          <p className="col-span-2">{`${format(date, "dd-MMM-yy hh:mm a")}`}</p>
+          <h1>{record.location}</h1>
+          <h1>{record.platform.trim('"')}</h1>
+          <h1 className="col-span-2">{record.browser.split(";")[0]}</h1>
+        </li>
+      ))}
     </ul>
-  )
-}
+  );
+};
 
-export default RecentVist
+export default RecentVist;

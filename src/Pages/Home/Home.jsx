@@ -104,7 +104,6 @@ const Home = () => {
         <h1 className="text-lg font-light mb-4">Recent Vist</h1>
         {renderRecentVist()}
       </Card>
-
       <Link to="/users" className="text-white inline-block mt-5" >User List</Link>
       <br />
       <Link to="/project" className="text-white inline-block mt-5" >Project List</Link>
