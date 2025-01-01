@@ -14,9 +14,9 @@ const RecentVist = ({ data }) => {
       {dates.map(({ date, record }, i) => (
         <li className="grid grid-cols-6 gap-1 text-center border font-light">
           <p className="col-span-2">{`${format(date, "dd-MMM-yy hh:mm a")}`}</p>
-          <h1>{record.location}</h1>
-          <h1>{record.platform.trim('"')}</h1>
-          <h1 className="col-span-2">{record.browser.split(";")[0]}</h1>
+          <h1>{record?.location}</h1>
+          <h1>{record?.platform}</h1>
+          <h1 className="col-span-2">{record?.browser?.split(";")[0]}</h1>
         </li>
       ))}
     </ul>
