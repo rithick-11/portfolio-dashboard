@@ -45,9 +45,10 @@ const Messages = ({ apiRes }) => {
                     </a>
                   </div>
                 </div>
-                <p className="text-sm font-extralight">
-                  {format(new Date(data.createdAt), "dd/MM/Y hh:mm a")}
-                </p>
+                <div className="flex flex-col items-end text-white text-sm font-extralight">
+                  <p>{format(new Date(data.createdAt), "MMM d Y")}</p>
+                  <p>{format(new Date(data.createdAt), "hh:mm a")}</p>
+                </div>
               </div>
             </div>
             <p className="pt-2 text-[1rem] font-thin text-white">
