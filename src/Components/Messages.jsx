@@ -11,6 +11,9 @@ const Messages = ({ apiRes }) => {
   console.log(apiRes.data);
 
   function maskEmail(email) {
+    if(!email){
+      return;
+    }
     const [localPart, domain] = email.split("@");
     const maskedLocal =
       localPart.slice(0, 2) +
