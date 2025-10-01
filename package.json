@@ -3,10 +3,13 @@
   "name": "portfolio-dashboard",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.13",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.12.2",
     "date-fns": "^4.1.0",
     "framer-motion": "^11.3.23-alpha.3",
     "gh-pages": "^6.1.1",
@@ -16,19 +19,19 @@
     "react-icons": "^5.5.0",
     "react-loader-spinner": "^6.1.6",
     "react-router-dom": "^6.26.0",
-    "react-scripts": "5.0.1",
     "sonner": "^1.5.0",
     "start": "^5.1.0",
     "styled-components": "^6.1.12",
-    "web-vitals": "^2.1.4"
+    "tailwindcss": "^4.1.13",
+    "web-vitals": "^2.1.4",
+    "zustand": "^5.0.8"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "deploy": "gh-pages -d dist"
   },
   "eslintConfig": {
     "extends": [
@@ -49,6 +52,7 @@
     ]
   },
   "devDependencies": {
-    "tailwindcss": "^3.4.8"
+    "@vitejs/plugin-react": "^5.0.4",
+    "vite": "^7.1.7"
   }
 }

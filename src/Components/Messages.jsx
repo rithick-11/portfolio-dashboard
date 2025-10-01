@@ -6,12 +6,13 @@ import {
 import React from "react";
 import { FaRegComment } from "react-icons/fa";
 import { RxAvatar } from "react-icons/rx";
+import useStore from "../store/useStore";
 
 const Messages = ({ apiRes }) => {
-  console.log(apiRes.data);
+  const { getInitalDataStatus, messages } = useStore();
 
   function maskEmail(email) {
-    if(!email){
+    if (!email) {
       return;
     }
     const [localPart, domain] = email.split("@");
@@ -32,7 +33,7 @@ const Messages = ({ apiRes }) => {
         Messages
       </h1>
       <ul className="flex flex-col sm:max-w-[70vw] md:max-w-[50vw] max-h-[70vh] overflow-y-auto gap-5 p-5">
-        {apiRes?.data.messages?.map((data, i) => (
+        {messages?.map((data, i) => (
           <li className="p-5 rounded-lg bg-white/10 border border-orange-500 shadow shadow-white/40">
             <div className="flex items-center justify-between gap-3 border-b border-orange-400 pb-4 font-thin text-sm">
               <div className="text-gray-200 flex justify-between w-full items-center">
