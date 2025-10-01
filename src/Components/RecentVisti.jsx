@@ -7,8 +7,6 @@ import { format, formatDistanceToNow } from "date-fns";
 const RecentVisti = () => {
   const { getInitalDataStatus, recentVist } = useStore();
 
-  console.log(getInitalDataStatus, recentVist);
-
   const getTimeAgo = (dateString) => {
     const date = new Date(dateString);
     return formatDistanceToNow(date, { addSuffix: false });
@@ -16,7 +14,7 @@ const RecentVisti = () => {
 
   const getDate = (dateString) => {
     const date = new Date(dateString);
-    return format(date, " h:mm a - d MMM yyyy");
+    return format(date, " h:mm a - d MMM yy");
   };
 
   return (

@@ -5,27 +5,23 @@ import {
 } from "date-fns";
 import React from "react";
 import { FaRegComment } from "react-icons/fa";
-import { RxAvatar } from "react-icons/rx";
+import { AiOutlineUser } from "react-icons/ai";
 import useStore from "../store/useStore";
 
-const Messages = ({ apiRes }) => {
+const Messages = () => {
   const { getInitalDataStatus, messages } = useStore();
 
-  function maskEmail(email) {
-    if (!email) {
-      return;
-    }
-    const [localPart, domain] = email.split("@");
-    const maskedLocal =
-      localPart.slice(0, 2) +
-      "*".repeat(localPart.length - 4) +
-      localPart.slice(-2);
-    const [domainName, domainExt] = domain.split(".");
-    const maskedDomain =
-      domainName[0] + "*".repeat(domainName.length - 1) + "." + domainExt;
-    return maskedLocal + "@" + maskedDomain;
-  }
+  console.log(getInitalDataStatus, messages);
 
+  const maskEmail = (email) => {
+    if (!email) return "";
+    const [user, domain] = email.split("@");
+    const maskedUser =
+      user.length <= 2
+        ? user[0] + "*"
+        : user[0] + "*".repeat(user.length - 2) + user.slice(-1);
+    return `${maskedUser}@${domain}`;
+  };
   return (
     <section className="mt-7">
       <h1 className="flex items-center gap-2 mb-5">
@@ -34,30 +30,20 @@ const Messages = ({ apiRes }) => {
       </h1>
       <ul className="flex flex-col sm:max-w-[70vw] md:max-w-[50vw] max-h-[70vh] overflow-y-auto gap-5 p-5">
         {messages?.map((data, i) => (
-          <li className="p-5 rounded-lg bg-white/10 border border-orange-500 shadow shadow-white/40">
-            <div className="flex items-center justify-between gap-3 border-b border-orange-400 pb-4 font-thin text-sm">
-              <div className="text-gray-200 flex justify-between w-full items-center">
-                <div className="flex gap-2 items-center">
-                  <RxAvatar className="text-4xl font-light" />
-                  <div>
-                    <p className="font-medium">{data.name}</p>
-                    <a
-                      href={`mailto:${data.email}`}
-                      className="font-extralight text-white/60"
-                    >
-                      {maskEmail(data.email)}
-                    </a>
-                  </div>
-                </div>
-                <div className="flex flex-col items-end text-white text-sm font-extralight">
-                  <p>{format(new Date(data.createdAt), "MMM d Y")}</p>
-                  <p>{format(new Date(data.createdAt), "hh:mm a")}</p>
-                </div>
+          <li className="border border-white/10 px-3 py-4 rounded-md" key={i}>
+            <div className="flex items-center mb-2 gap-3 border-b border-white/10 pb-3">
+              <AiOutlineUser className="text-3xl" />
+              <div className="text-xs">
+                <h1>{data?.name}</h1>
+                <p className="text-xsy font-extralight">
+                  {maskEmail(data?.email)}
+                </p>
               </div>
             </div>
-            <p className="pt-2 text-[1rem] font-thin text-white">
-              {data.message}
-            </p>
+            <p className="text-sm font-normal text-white/70">{data?.message}</p>
+            <div className="text-xs font-extralight text-white/50 mt-2 flex justify-end">
+              <p>{format(new Date(data?.createdAt), "h:mm a - d MMM yy")}</p>
+            </div>
           </li>
         ))}
       </ul>
