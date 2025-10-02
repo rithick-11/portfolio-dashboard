@@ -23,12 +23,8 @@ const Messages = () => {
     return `${maskedUser}@${domain}`;
   };
   return (
-    <section className="mt-7">
-      <h1 className="flex items-center gap-2 mb-5">
-        <FaRegComment />
-        Messages
-      </h1>
-      <ul className="flex flex-col sm:max-w-[70vw] md:max-w-[50vw] max-h-[70vh] overflow-y-auto gap-5 p-5">
+    <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-5 ">
+      <ul className="flex flex-col gap-4 col-span-1 md:col-span-2 lg:col-span-2">
         {messages?.map((data, i) => (
           <li className="border border-white/10 px-3 py-4 rounded-md" key={i}>
             <div className="flex items-center mb-2 gap-3 border-b border-white/10 pb-3">
@@ -40,14 +36,14 @@ const Messages = () => {
                 </p>
               </div>
             </div>
-            <p className="text-sm font-normal text-white/70">{data?.message}</p>
+            <p className="text-xs font-normal text-white/70">{data?.message}</p>
             <div className="text-xs font-extralight text-white/50 mt-2 flex justify-end">
               <p>{format(new Date(data?.createdAt), "h:mm a - d MMM yy")}</p>
             </div>
           </li>
         ))}
       </ul>
-    </section>
+    </div>
   );
 };
 

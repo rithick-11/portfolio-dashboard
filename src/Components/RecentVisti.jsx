@@ -26,10 +26,10 @@ const RecentVisti = () => {
       {getInitalDataStatus === apiStatus.loading && "Loading..."}
       {getInitalDataStatus === apiStatus.error && "Error"}
       {getInitalDataStatus === apiStatus.success && (
-        <table className="mt-4">
+        <table className="mt-4 scrollbar ">
           <thead className="">
             <tr className="font-light text-sm text-white/50">
-              <th className="text-left p-2">Visited At</th>
+              <th className="text-left p-2 min-w-fit">Visited At</th>
               <th className="text-left p-2">City</th>
               <th className="text-left p-2">Device</th>
               <th className="text-left p-2">Browser</th>
@@ -41,7 +41,9 @@ const RecentVisti = () => {
                 <tr key={index} className="border-t text-xs border-white/10">
                   <td className="p-2 text-sm">
                     {getTimeAgo(item.date)} <br />{" "}
-                    <span className="text-xs font-extralight">{getDate(item.date)}</span>{" "}
+                    <span className="text-xs font-extralight">
+                      {getDate(item.date)}
+                    </span>{" "}
                   </td>
                   <td className="p-2 text-sm">{item?.record?.location}</td>
                   <td className="p-2 text-sm">{item?.record?.platform}</td>

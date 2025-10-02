@@ -4,7 +4,6 @@ import { Navbar, RecentVisti } from "../../Components";
 import { LuUsers } from "react-icons/lu";
 import { IoConstructOutline } from "react-icons/io5";
 import useStore from "../../store/useStore";
-import Messages from "../../Components/Messages";
 
 const Home = () => {
   const { getInitalData } = useStore();
@@ -24,12 +23,11 @@ const Home = () => {
         <div className="page-link card-center-col">
           <IoConstructOutline className="text-3xl" />
           <p className="text-md">Projects</p>
-          <Link to={"/users"} className="absolute inset-0 "></Link>
+          <Link to={"/project"} className="absolute inset-0 "></Link>
         </div>
       </div>
 
       <RecentVisti />
-      <Messages />
     </section>
   );
 };

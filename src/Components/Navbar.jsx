@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { RiMessage3Fill } from "react-icons/ri";
 import { IoMdEye } from "react-icons/io";
@@ -6,13 +6,18 @@ import useStore from "../store/useStore";
 import { apiStatus } from "../store/api";
 
 const Navbar = () => {
-  const { getInitalDataStatus, vistCount, messages } = useStore();
+  const { getInitalDataStatus, vistCount, messages, getInitalData } =
+    useStore();
 
-  console.log(getInitalDataStatus, vistCount, messages);
-
+  useEffect(() => {
+    getInitalData();
+  }, []);
+  
   return (
     <nav className="flex items-center justify-between py-6 border-b border-white/10">
-      <h1 className="text-3xl">Dashboard</h1>
+      <Link to={"/"} className="text-3xl">
+        Dashboard
+      </Link>
       <ul className="flex items-center gap-10">
         <li className="relative">
           <Link to="/messages" className="flex items-center gap-2">

@@ -17,3 +17,12 @@ body {
 .page-link {
   @apply relative p-4  border border-white/10 rounded-md hover:bg-white/5 transition cursor-pointer w-full min-h-32 cursor-pointer;
 }
+
+
+.scrollbar::-webkit-scrollbar {
+  @apply w-2 h-2;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
