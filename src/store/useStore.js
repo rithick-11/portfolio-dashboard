@@ -79,6 +79,14 @@ const useStore = create((set, get) => ({
       console.log(error);
     }
   },
+  onCreateNewProject: async (project) => {
+    try {
+      const response = await api.post("/admin/project/new", project);
+      console.log("creating new project...");
+    } catch (error) {
+      console.log(error);
+    }
+  },
 }));
 
 export default useStore;

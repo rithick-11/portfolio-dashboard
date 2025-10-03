@@ -1,20 +1,65 @@
-import React from "react";
+import React, { useState } from "react";
 import { Navbar, ProjectFormContainer } from "../../Components";
 import { IoConstructOutline } from "react-icons/io5";
+import useStore from "../../store/useStore";
 
 const initProjectData = {
   name: "",
-  desc: "",
+  desc: "dasdasds",
   category: "",
   techStack: [],
-  projectImg:
-    "https://res.cloudinary.com/dwpmsw2i4/image/upload/v1740225007/DALL_E_2025-01-23_20.09.44_-_A_conceptual_illustration_of_a_RESTful_API_for_a_blog_management_system._The_design_includes_a_central_node_labeled_API_connected_to_user_roles_Adm_xi76et.webp",
-  siteLink: "",
-  sourceCode: "",
+  projectImg: "",
+  siteLink: "https://claude.ai/chat/c82b30d0-2b88-4f13-9da0-840483270a81",
+  sourceCode: "https://claude.ai/chat/c82b30d0-2b88-4f13-9da0-840483270a81",
   order: 0,
 };
 
 const NewProject = () => {
+  const [project, setProject] = useState(initProjectData);
+  const [techStack, setTechStack] = useState([]);
+  const [projectImg, setProjectImg] = useState("");
+  const [btnLoading, setBtnLoading] = useState(false);
+  const { onCreateNewProject } = useStore();
+
+  const handleChange = (e) => {
+    const { name, value, type } = e.target;
+    const val = type === "number" ? parseInt(value) : value;
+    setProject({ ...project, [name]: val });
+    console.log(project);
+  };
+
+  const onAddTechStack = (e) => {
+    e.preventDefault();
+    if (!techStack) return;
+    setProject({ ...project, techStack: [...project.techStack, techStack] });
+    setTechStack("");
+  };
+
+  const onDeleteTechStack = (e, index) => {
+    e.preventDefault();
+    const updatedTechStack = project.techStack.filter((_, i) => i !== index);
+    setProject({ ...project, techStack: updatedTechStack });
+    console.log(updatedTechStack);
+  };
+
+  const onAddNewProject = async (e) => {
+    e.preventDefault();
+    setBtnLoading(true);
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const newProject = { ...project, projectImg: reader.result };
+      try {
+        const res = await onCreateNewProject(newProject);
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
+      setBtnLoading(false);
+    };
+
+    reader.readAsDataURL(project.projectImg);
+  };
+
   return (
     <section className="container-width pb-5">
       <Navbar />
@@ -24,7 +69,19 @@ const NewProject = () => {
           New project
         </h1>
       </div>
-      <ProjectFormContainer projectFormData={initProjectData} />
+      <ProjectFormContainer
+        projectData={project}
+        handleChange={handleChange}
+        onAddTechStack={onAddTechStack}
+        onDeleteTechStack={onDeleteTechStack}
+        techStack={techStack}
+        setTechStack={setTechStack}
+        submitText={"Create Project"}
+        onSubmitForm={onAddNewProject}
+        projectImg={projectImg}
+        setProjectImg={setProjectImg}
+        btnLoading={btnLoading}
+      />
     </section>
   );
 };

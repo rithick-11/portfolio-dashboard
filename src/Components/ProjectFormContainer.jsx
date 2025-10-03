@@ -8,46 +8,74 @@ import {
 
 import { HiMiniXMark } from "react-icons/hi2";
 
+const initProjectData = {
+  name: "loading...",
+  desc: "loading...",
+  category: "",
+  techStack: [],
+  projectImg:
+    "https://res.cloudinary.com/dwpmsw2i4/image/upload/v1740225007/DALL_E_2025-01-23_20.09.44_-_A_conceptual_illustration_of_a_RESTful_API_for_a_blog_management_system._The_design_includes_a_central_node_labeled_API_connected_to_user_roles_Adm_xi76et.webp",
+  siteLink: "",
+  sourceCode: "",
+  order: 0,
+};
+
 const ProjectFormContainer = ({
-  projectData,
-  handleChange,
-  onAddTechStack,
-  onDeleteTechStack,
-  techStack,
-  setTechStack,
-  submitText,
-  onSubmitForm,
-  projectImg,
-  setProjectImg,
-  btnLoading,
+  projectData = initProjectData,
+  handleChange = () => {},
+  onAddTechStack = () => {},
+  onDeleteTechStack = () => {},
+  techStack = [],
+  setTechStack = () => {},
+  submitText = "Submit",
+  onSubmitForm = () => {},
+  onRemoveImage = () => {},
+  btnLoading = false,
 }) => {
-  // console.log(projectData);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Pass the file object to handleChange
+      handleChange({
+        target: {
+          name: 'projectImg',
+          value: file,
+          type: 'file'
+        }
+      });
+    }
+  };
 
   return (
     <form className="mt-6 space-y-6" onSubmit={onSubmitForm}>
-      {projectData.projectImg ? (
-        <div className="">
-          <div className="relative grid grid-cols-4">
+      <div>
+        {projectData.projectImg ? (
+        <div className="relative grid grid-cols-6">
+          <div className="relative col-span-6 md:col-span-4 lg:col-span-2">
             <img
-              className="w-full col-span-4 aspect-16/9 md:col-span-2 lg:col-span-2"
-              src={projectData.projectImg}
-              alt="Project"
+              className="w-full aspect-video object-cover rounded-lg"
+              src={typeof projectData.projectImg === 'string' 
+                ? projectData.projectImg 
+                : URL.createObjectURL(projectData.projectImg)}
+              alt="Project preview"
             />
+            <button
+              type="button"
+              onClick={onRemoveImage}
+              className="absolute top-2 right-2 bg-black/50 rounded-full p-1 hover:bg-black/70 transition-colors"
+            >
+              <XCircleIcon className="h-8 w-8 text-white" />
+            </button>
           </div>
-          <button
-            onClick={() => setProjectData({ ...projectData, projectImg: "" })}
-            className=""
-          >
-            <XCircleIcon className="h-6 w-6 text-white" />
-          </button>
         </div>
       ) : (
-        <div className="">
+        <div>
           <label
             htmlFor="cover-photo"
             className="block text-sm/6 font-medium text-white"
           >
-            project image
+            Project Image
           </label>
           <div className="mt-2 flex justify-center rounded-lg border border-dashed border-white/25 px-6 py-10">
             <div className="text-center">
@@ -57,15 +85,17 @@ const ProjectFormContainer = ({
               />
               <div className="mt-4 flex text-sm/6 text-gray-400">
                 <label
-                  htmlFor="file-upload"
+                  htmlFor="projectImg"
                   className="relative cursor-pointer rounded-md bg-transparent font-semibold text-indigo-400 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-indigo-500 hover:text-indigo-300"
                 >
                   <span>Upload a file</span>
                   <input
-                    id="file-upload"
-                    name="file-upload"
-                    type=""
+                    id="projectImg"
+                    name="projectImg"
+                    type="file"
                     className="sr-only"
+                    accept="image/*"
+                    onChange={handleImageChange}
                   />
                 </label>
                 <p className="pl-1">or drag and drop</p>
@@ -77,64 +107,62 @@ const ProjectFormContainer = ({
           </div>
         </div>
       )}
+      </div>
 
       {/* project name */}
-      <div className="">
-        <div className="sm:col-span-4">
-          <label
-            htmlFor="name"
-            className="block text-sm/6 font-medium text-white"
-          >
-            project name
-          </label>
-          <div className="mt-2">
-            <div className="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500">
-              <input
-                id="name"
-                name="name"
-                type="text"
-                value={projectData.name}
-                onChange={handleChange}
-                placeholder="project name"
-                className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-none sm:text-sm/6"
-              />
-            </div>
+      <div>
+        <label
+          htmlFor="name"
+          className="block text-sm/6 font-medium text-white"
+        >
+          Project Name
+        </label>
+        <div className="mt-2">
+          <div className="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500">
+            <input
+              id="name"
+              name="name"
+              type="text"
+              value={projectData.name}
+              onChange={handleChange}
+              placeholder="Enter project name"
+              required
+              className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-none sm:text-sm/6"
+            />
           </div>
         </div>
       </div>
 
       {/* project category */}
-      <div className="">
-        <div className="sm:col-span-4">
-          <label
-            htmlFor="category"
-            className="block text-sm/6 font-medium text-white"
-          >
-            project category
-          </label>
-          <div className="mt-2">
-            <div className="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500">
-              <input
-                id="category"
-                name="category"
-                type="text"
-                value={projectData.category}
-                onChange={handleChange}
-                placeholder="project name"
-                className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-none sm:text-sm/6"
-              />
-            </div>
+      <div>
+        <label
+          htmlFor="category"
+          className="block text-sm/6 font-medium text-white"
+        >
+          Project Category
+        </label>
+        <div className="mt-2">
+          <div className="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500">
+            <input
+              id="category"
+              name="category"
+              type="text"
+              value={projectData.category}
+              onChange={handleChange}
+              placeholder="Enter project category"
+              className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-none sm:text-sm/6"
+            />
           </div>
         </div>
       </div>
 
       {/* project description */}
-      <div className="">
+      <div>
         <label
           htmlFor="desc"
           className="block text-sm/6 font-medium text-white"
         >
-          project description
+          Project Description
         </label>
         <div className="mt-2">
           <textarea
@@ -142,14 +170,14 @@ const ProjectFormContainer = ({
             name="desc"
             value={projectData.desc}
             onChange={handleChange}
-            placeholder="project description"
+            placeholder="Write a few sentences about your project..."
             rows={4}
+            required
             className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
-            defaultValue={""}
           />
         </div>
         <p className="mt-3 text-sm/6 text-gray-400">
-          Write a few sentences about project.
+          Write a few sentences about your project.
         </p>
       </div>
 
@@ -161,36 +189,39 @@ const ProjectFormContainer = ({
         >
           Tech Stack
         </label>
-        <ul className="flex gap-2 my-2 flex-wrap my-2">
-          {}
-          {projectData?.techStack?.map((tech, index) => (
-            <li
-              key={index}
-              className="bg-white/5 p-1 text-sm rounded px-2 relative flex"
-            >
-              <p>{tech}</p>
-              <button
-                onClick={(e) => onDeleteTechStack(e, index)}
-                className="border-l  pl-2 ml-2 border-white/25 text-gray-400 hover:text-gray-200"
+        {projectData?.techStack?.length > 0 && (
+          <ul className="flex gap-2 my-3 flex-wrap">
+            {projectData.techStack.map((tech, index) => (
+              <li
+                key={index}
+                className="bg-white/5 p-1 text-sm rounded px-2 relative flex items-center"
               >
-                <HiMiniXMark className="text-white" />
-              </button>
-            </li>
-          ))}
-        </ul>
-        <div className="grid grid-cols-12">
+                <p>{tech}</p>
+                <button
+                  type="button"
+                  onClick={(e) => onDeleteTechStack(e, index)}
+                  className="border-l pl-2 ml-2 border-white/25 text-gray-400 hover:text-gray-200"
+                >
+                  <HiMiniXMark className="text-white" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="flex gap-2">
           <input
             type="text"
             id="techStack"
             name="techStack"
             value={techStack}
             onChange={(e) => setTechStack(e.target.value)}
-            placeholder="Add the tech stack"
-            className="block col-span-5 w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+            placeholder="Add a technology (e.g., React, Node.js)"
+            className="block flex-1 rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
           />
           <button
+            type="button"
             onClick={onAddTechStack}
-            className="col-span-2 ml-2 rounded-md bg-indigo-500 px-3 py-1.5 text-base font-medium text-white hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm/6"
+            className="rounded-md bg-indigo-500 px-4 py-1.5 text-base font-medium text-white hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm/6"
           >
             Add
           </button>
@@ -198,82 +229,84 @@ const ProjectFormContainer = ({
       </div>
 
       {/* source code */}
-      <div className="">
-        <div className="sm:col-span-4">
-          <label
-            htmlFor="sourceCode"
-            className="block text-sm/6 font-medium text-white"
-          >
-            Source Code link
-          </label>
-          <div className="mt-2">
-            <div className="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500">
-              <input
-                id="sourceCode"
-                name="sourceCode"
-                type="url"
-                placeholder="eg. https://github.com/"
-                onChange={handleChange}
-                value={projectData.sourceCode}
-                required
-                className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-none sm:text-sm/6"
-              />
-            </div>
+      <div>
+        <label
+          htmlFor="sourceCode"
+          className="block text-sm/6 font-medium text-white"
+        >
+          Source Code Link
+        </label>
+        <div className="mt-2">
+          <div className="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500">
+            <input
+              id="sourceCode"
+              name="sourceCode"
+              type="url"
+              placeholder="e.g., https://github.com/username/repo"
+              onChange={handleChange}
+              value={projectData.sourceCode}
+              required
+              className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-none sm:text-sm/6"
+            />
           </div>
         </div>
       </div>
-      <div className="">
-        <div className="sm:col-span-4">
-          <label
-            htmlFor="username"
-            className="block text-sm/6 font-medium text-white"
-          >
-            Project live link
-          </label>
-          <div className="mt-2">
-            <div className="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500">
-              <input
-                id="siteLink"
-                name="siteLink"
-                type="url"
-                placeholder="eg. https://yourproject.com/"
-                required
-                value={projectData.siteLink}
-                onChange={handleChange}
-                className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-none sm:text-sm/6"
-              />
-            </div>
+
+      {/* live link */}
+      <div>
+        <label
+          htmlFor="siteLink"
+          className="block text-sm/6 font-medium text-white"
+        >
+          Project Live Link
+        </label>
+        <div className="mt-2">
+          <div className="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500">
+            <input
+              id="siteLink"
+              name="siteLink"
+              type="url"
+              placeholder="e.g., https://yourproject.com"
+              required
+              value={projectData.siteLink}
+              onChange={handleChange}
+              className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-none sm:text-sm/6"
+            />
           </div>
         </div>
       </div>
-      {/* source code */}
-      <div className="">
-        <div className="sm:col-span-4">
-          <label
-            htmlFor="order"
-            className="block text-sm/6 font-medium text-white"
-          >
-            project display order
-          </label>
-          <div className="mt-2">
-            <div className="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500">
-              <input
-                id="order"
-                name="order"
-                type="number"
-                placeholder="eg. https://github.com/"
-                onChange={handleChange}
-                value={projectData.order}
-                required
-                className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-none sm:text-sm/6"
-              />
-            </div>
+
+      {/* display order */}
+      <div>
+        <label
+          htmlFor="order"
+          className="block text-sm/6 font-medium text-white"
+        >
+          Project Display Order
+        </label>
+        <div className="mt-2">
+          <div className="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500">
+            <input
+              id="order"
+              name="order"
+              type="number"
+              placeholder="e.g., 1"
+              onChange={handleChange}
+              value={projectData.order}
+              required
+              className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-none sm:text-sm/6"
+            />
           </div>
         </div>
+        <p className="mt-3 text-sm/6 text-gray-400">
+          Lower numbers appear first in the project list.
+        </p>
       </div>
+
       <button
         type="submit"
-        className="rounded-md w-full bg-indigo-500 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        disabled={btnLoading}
+        className="rounded-md w-full bg-indigo-500 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {btnLoading ? "Loading..." : submitText}
       </button>
