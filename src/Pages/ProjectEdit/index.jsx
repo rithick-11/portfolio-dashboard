@@ -17,13 +17,14 @@ const initProjectData = {
   order: 0,
 };
 
-
-
 const ProjectEdit = () => {
   const { id } = useParams();
   const [project, setProject] = useState(initProjectData);
-  const { getProjectById } = useStore();
+  const { getProjectById, onUpadateProject } = useStore();
   const [apiState, setApiState] = useState(apiStatus.initial);
+  const [techStack, setTechStack] = useState([]);
+  const [projectImg, setProjectImg] = useState("");
+  const [btnLoading, setBtnLoading] = useState(false);
 
   const getProjectDetails = async () => {
     try {
@@ -41,7 +42,36 @@ const ProjectEdit = () => {
     getProjectDetails();
   }, []);
 
-  console.log(project);
+  const handleChange = (e) => {
+    const { name, value, type } = e.target;
+    const val = type === "number" ? parseInt(value) : value;
+    setProject({ ...project, [name]: val });
+  };
+
+  const onAddTechStack = (e) => {
+    e.preventDefault();
+    if (!techStack) return;
+    setProject({ ...project, techStack: [...project.techStack, techStack] });
+    setTechStack("");
+  };
+
+  const onDeleteTechStack = (e, index) => {
+    e.preventDefault();
+    const updatedTechStack = project.techStack.filter((_, i) => i !== index);
+    setProject({ ...project, techStack: updatedTechStack });
+    console.log(updatedTechStack);
+  };
+
+  const onUpdateProject = async (e) => {
+    e.preventDefault();
+    setBtnLoading(true);
+    try {
+      const res = await onUpadateProject(id, project);
+    } catch (error) {
+      console.log(error);
+    }
+    setBtnLoading(false);
+  };
 
   return (
     <section className="container-width pb-5">
@@ -61,7 +91,19 @@ const ProjectEdit = () => {
         </div>
       )}
       {apiState === apiStatus.success && (
-        <ProjectFormContainer projectFormData={project} />
+        <ProjectFormContainer
+          projectData={project}
+          handleChange={handleChange}
+          onAddTechStack={onAddTechStack}
+          onDeleteTechStack={onDeleteTechStack}
+          techStack={techStack}
+          setTechStack={setTechStack}
+          submitText={"Update Project"}
+          onSubmitForm={onUpdateProject}
+          projectImg={projectImg}
+          setProjectImg={setProjectImg}
+          btnLoading={btnLoading}
+        />
       )}
     </section>
   );

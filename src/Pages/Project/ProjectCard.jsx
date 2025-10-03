@@ -15,7 +15,6 @@ const ProjectCard = ({ data }) => {
     sourceCode,
     _id,
   } = data;
-  console.log(data);
   return (
     <li className="text-sm border border-white/10 rounded-md overflow-hidden">
       <img
@@ -42,7 +41,14 @@ const ProjectCard = ({ data }) => {
           <h1 className="text-sm flex items-center gap-2 font-normal self-baseline-last">
             <FaGithub /> Source Code:{" "}
           </h1>
-          <a>{sourceCode}</a>
+          <a
+            className="underline"
+            href={sourceCode}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {sourceCode}
+          </a>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <h1 className="text-sm flex items-center gap-2 font-normal self-baseline-last">
@@ -57,7 +63,10 @@ const ProjectCard = ({ data }) => {
             {siteLink}
           </a>
         </div>
-        <Link to={`/project/edit/${_id}`} className="bg-white/90 self-end text-sm mb-0 px-2 py-1 rounded  block text-center font-bold  text-black w-full">
+        <Link
+          to={`/project/edit/${_id}`}
+          className="bg-white/90 self-end text-sm mb-0 px-2 py-1 rounded  block text-center font-bold  text-black w-full"
+        >
           Edit Project
         </Link>
       </div>

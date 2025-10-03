@@ -31,7 +31,18 @@ const useStore = create((set, get) => ({
     try {
       set({ getInitalProjectsStatus: apiStatus.loading });
       const { data } = await api.get("/admin/projects");
-      set({ projects: data.projects });
+      let projects = data.projects.map((project, index) => {
+        const newProject = { ...project };
+        if (!project?.techStack) {
+          newProject.techStack = [];
+        }
+        if (!project.sourceCode) {
+          newProject.sourceCode = "";
+        }
+        return newProject;
+      });
+      set({ projects: projects });
+      console.log(projects);
       set({ getInitalProjectsStatus: apiStatus.success });
     } catch (error) {
       console.log(error);
@@ -46,7 +57,27 @@ const useStore = create((set, get) => ({
       const { data } = await api.get(`/admin/project/${id}`);
       project = data.project;
     }
-    return project;
+
+    const newProject = { ...project };
+    if (!project?.techStack) {
+      newProject.techStack = [];
+    }
+    if (!project.sourceCode) {
+      newProject.sourceCode = "";
+    }
+    return newProject;
+
+    return newProject;
+  },
+  onUpadateProject: async (id, data) => {
+    try {
+      console.log("updating project...", id, data);
+      const response = await api.put(`/admin/project/update/${id}`, data);
+      set({ projects: response.data.projects });
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
   },
 }));
 
