@@ -5,12 +5,12 @@ import useStore from "../../store/useStore";
 
 const initProjectData = {
   name: "",
-  desc: "dasdasds",
+  desc: "",
   category: "",
   techStack: [],
   projectImg: "",
-  siteLink: "https://claude.ai/chat/c82b30d0-2b88-4f13-9da0-840483270a81",
-  sourceCode: "https://claude.ai/chat/c82b30d0-2b88-4f13-9da0-840483270a81",
+  siteLink: "",
+  sourceCode: "",
   order: 0,
 };
 

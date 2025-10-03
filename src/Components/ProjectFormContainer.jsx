@@ -208,7 +208,7 @@ const ProjectFormContainer = ({
             ))}
           </ul>
         )}
-        <div className="flex gap-2">
+        <div className="grid grid-cols-12 gap-2">
           <input
             type="text"
             id="techStack"
@@ -216,12 +216,12 @@ const ProjectFormContainer = ({
             value={techStack}
             onChange={(e) => setTechStack(e.target.value)}
             placeholder="Add a technology (e.g., React, Node.js)"
-            className="block flex-1 rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+            className="block col-span-6 md:col-end-3  rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
           />
           <button
             type="button"
             onClick={onAddTechStack}
-            className="rounded-md bg-indigo-500 px-4 py-1.5 text-base font-medium text-white hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm/6"
+            className="rounded-md col-span-3 md:col-span-2 lg:col-span-1 bg-indigo-500 px-4 py-1.5 text-base font-medium text-white hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm/6"
           >
             Add
           </button>
