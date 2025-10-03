@@ -14,7 +14,7 @@ const baseUrl = {
 }
 
 const api = axios.create({
-  baseURL: baseUrl.development,
+  baseURL: baseUrl.production,
   headers: {
     Authorization: `Bearer ${Cookies.get("token")}`,
   },
