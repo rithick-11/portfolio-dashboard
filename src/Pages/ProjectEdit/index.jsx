@@ -22,7 +22,6 @@ const ProjectEdit = () => {
   const [project, setProject] = useState(initProjectData);
   const { getProjectById, onUpadateProject } = useStore();
   const [apiState, setApiState] = useState(apiStatus.initial);
-  const [techStack, setTechStack] = useState([]);
   const [projectImg, setProjectImg] = useState("");
   const [btnLoading, setBtnLoading] = useState(false);
 
@@ -46,20 +45,6 @@ const ProjectEdit = () => {
     const { name, value, type } = e.target;
     const val = type === "number" ? parseInt(value) : value;
     setProject({ ...project, [name]: val });
-  };
-
-  const onAddTechStack = (e) => {
-    e.preventDefault();
-    if (!techStack) return;
-    setProject({ ...project, techStack: [...project.techStack, techStack] });
-    setTechStack("");
-  };
-
-  const onDeleteTechStack = (e, index) => {
-    e.preventDefault();
-    const updatedTechStack = project.techStack.filter((_, i) => i !== index);
-    setProject({ ...project, techStack: updatedTechStack });
-    console.log(updatedTechStack);
   };
 
   const onUpdateProject = async (e) => {
@@ -94,10 +79,6 @@ const ProjectEdit = () => {
         <ProjectFormContainer
           projectData={project}
           handleChange={handleChange}
-          onAddTechStack={onAddTechStack}
-          onDeleteTechStack={onDeleteTechStack}
-          techStack={techStack}
-          setTechStack={setTechStack}
           submitText={"Update Project"}
           onSubmitForm={onUpdateProject}
           projectImg={projectImg}

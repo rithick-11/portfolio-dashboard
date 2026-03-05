@@ -23,15 +23,12 @@ const initProjectData = {
 const ProjectFormContainer = ({
   projectData = initProjectData,
   handleChange = () => {},
-  onAddTechStack = () => {},
-  onDeleteTechStack = () => {},
-  techStack = [],
-  setTechStack = () => {},
   submitText = "Submit",
   onSubmitForm = () => {},
   onRemoveImage = () => {},
   btnLoading = false,
 }) => {
+  const [techStackInputText, setTechStackInputText] = useState("");
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -39,74 +36,101 @@ const ProjectFormContainer = ({
       // Pass the file object to handleChange
       handleChange({
         target: {
-          name: 'projectImg',
+          name: "projectImg",
           value: file,
-          type: 'file'
-        }
+          type: "file",
+        },
       });
     }
+  };
+
+  const onAddTechStack = (e) => {
+    e.preventDefault();
+    if (!techStackInputText) return;
+    handleChange({
+      target: {
+        name: "techStack",
+        value: [...projectData.techStack, techStackInputText],
+      },
+    });
+    setTechStackInputText("");
+  };
+
+  const onDeleteTechStack = (e, index) => {
+    e.preventDefault();
+    const updatedTechStack = projectData.techStack.filter(
+      (_, i) => i !== index
+    );
+    handleChange({
+      target: {
+        name: "techStack",
+        value: updatedTechStack,
+      },
+    });
   };
 
   return (
     <form className="mt-6 space-y-6" onSubmit={onSubmitForm}>
       <div>
         {projectData.projectImg ? (
-        <div className="relative grid grid-cols-6">
-          <div className="relative col-span-6 md:col-span-4 lg:col-span-2">
-            <img
-              className="w-full aspect-video object-cover rounded-lg"
-              src={typeof projectData.projectImg === 'string' 
-                ? projectData.projectImg 
-                : URL.createObjectURL(projectData.projectImg)}
-              alt="Project preview"
-            />
-            <button
-              type="button"
-              onClick={onRemoveImage}
-              className="absolute top-2 right-2 bg-black/50 rounded-full p-1 hover:bg-black/70 transition-colors"
-            >
-              <XCircleIcon className="h-8 w-8 text-white" />
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div>
-          <label
-            htmlFor="cover-photo"
-            className="block text-sm/6 font-medium text-white"
-          >
-            Project Image
-          </label>
-          <div className="mt-2 flex justify-center rounded-lg border border-dashed border-white/25 px-6 py-10">
-            <div className="text-center">
-              <PhotoIcon
-                aria-hidden="true"
-                className="mx-auto size-12 text-gray-600"
+          <div className="relative grid grid-cols-6">
+            <div className="relative col-span-6 md:col-span-4 lg:col-span-2">
+              <img
+                className="w-full aspect-video object-cover rounded-lg"
+                src={
+                  typeof projectData.projectImg === "string"
+                    ? projectData.projectImg
+                    : URL.createObjectURL(projectData.projectImg)
+                }
+                alt="Project preview"
               />
-              <div className="mt-4 flex text-sm/6 text-gray-400">
-                <label
-                  htmlFor="projectImg"
-                  className="relative cursor-pointer rounded-md bg-transparent font-semibold text-indigo-400 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-indigo-500 hover:text-indigo-300"
-                >
-                  <span>Upload a file</span>
-                  <input
-                    id="projectImg"
-                    name="projectImg"
-                    type="file"
-                    className="sr-only"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                  />
-                </label>
-                <p className="pl-1">or drag and drop</p>
-              </div>
-              <p className="text-xs/5 text-gray-400">
-                PNG, JPG, GIF up to 10MB
-              </p>
+              <button
+                type="button"
+                onClick={onRemoveImage}
+                className="absolute top-2 right-2 bg-black/50 rounded-full p-1 hover:bg-black/70 transition-colors"
+              >
+                <XCircleIcon className="h-8 w-8 text-white" />
+              </button>
             </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <div>
+            <label
+              htmlFor="cover-photo"
+              className="block text-sm/6 font-medium text-white"
+            >
+              Project Image
+            </label>
+            <div className="mt-2 flex justify-center rounded-lg border border-dashed border-white/25 px-6 py-10">
+              <div className="text-center">
+                <PhotoIcon
+                  aria-hidden="true"
+                  className="mx-auto size-12 text-gray-600"
+                />
+                <div className="mt-4 flex text-sm/6 text-gray-400">
+                  <label
+                    htmlFor="projectImg"
+                    className="relative cursor-pointer rounded-md bg-transparent font-semibold text-indigo-400 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-indigo-500 hover:text-indigo-300"
+                  >
+                    <span>Upload a file</span>
+                    <input
+                      id="projectImg"
+                      name="projectImg"
+                      type="file"
+                      className="sr-only"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                    />
+                  </label>
+                  <p className="pl-1">or drag and drop</p>
+                </div>
+                <p className="text-xs/5 text-gray-400">
+                  PNG, JPG, GIF up to 10MB
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* project name */}
@@ -213,8 +237,8 @@ const ProjectFormContainer = ({
             type="text"
             id="techStack"
             name="techStack"
-            value={techStack}
-            onChange={(e) => setTechStack(e.target.value)}
+            value={techStackInputText} 
+            onChange={(e) => setTechStackInputText(e.target.value)}
             placeholder="Add a technology (e.g., React, Node.js)"
             className="block col-span-6 md:col-end-3  rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
           />

@@ -9,6 +9,7 @@ import ProjectDetial from "./Pages/ProjectDetial/ProjectDetial";
 import NewProject from "./Pages/NewProject";
 import ProjectEdit from "./Pages/ProjectEdit";
 import MessagesPage from "./Pages/Messages";
+import NxtPre from "./Pages/NqtPre/NxtPre";
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
       <BrowserRouter basename="/portfolio-dashboard">
         <Routes>
           <Route exact path="/login" element={<Login />}></Route>
+          <Route exact path="/nqt-preparation" element={<NxtPre />}></Route>
           <Route element={<ProtectedRoute />}>
             <Route exact path="/" element={<Home />} />
             <Route exact path="/users" element={<Users />} />

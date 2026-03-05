@@ -16,7 +16,6 @@ const initProjectData = {
 
 const NewProject = () => {
   const [project, setProject] = useState(initProjectData);
-  const [techStack, setTechStack] = useState([]);
   const [projectImg, setProjectImg] = useState("");
   const [btnLoading, setBtnLoading] = useState(false);
   const { onCreateNewProject } = useStore();
@@ -72,10 +71,6 @@ const NewProject = () => {
       <ProjectFormContainer
         projectData={project}
         handleChange={handleChange}
-        onAddTechStack={onAddTechStack}
-        onDeleteTechStack={onDeleteTechStack}
-        techStack={techStack}
-        setTechStack={setTechStack}
         submitText={"Create Project"}
         onSubmitForm={onAddNewProject}
         projectImg={projectImg}
