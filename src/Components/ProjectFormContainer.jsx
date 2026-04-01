@@ -1,338 +1,167 @@
 import React, { useState } from "react";
-
-import {
-  PhotoIcon,
-  XCircleIcon,
-  UserCircleIcon,
-} from "@heroicons/react/24/solid";
-
+import { LuUpload, LuX, LuPlus, LuImage } from "react-icons/lu";
 import { HiMiniXMark } from "react-icons/hi2";
+import { ColorRing } from "react-loader-spinner";
 
-const initProjectData = {
-  name: "loading...",
-  desc: "loading...",
-  category: "",
-  techStack: [],
-  projectImg:
-    "https://res.cloudinary.com/dwpmsw2i4/image/upload/v1740225007/DALL_E_2025-01-23_20.09.44_-_A_conceptual_illustration_of_a_RESTful_API_for_a_blog_management_system._The_design_includes_a_central_node_labeled_API_connected_to_user_roles_Adm_xi76et.webp",
-  siteLink: "",
-  sourceCode: "",
-  order: 0,
-};
+const inputClass =
+  "w-full px-4 py-2.5 rounded-xl bg-white/8 border border-white/20 focus:border-orange-500/70 focus:bg-orange-500/5 outline-none text-sm text-white placeholder:text-white/30 transition-all";
+
+const Field = ({ label, hint, children }) => (
+  <div className="flex flex-col gap-1.5">
+    <label className="text-xs font-semibold uppercase tracking-wider text-white/40">{label}</label>
+    {children}
+    {hint && <p className="text-[11px] text-white/25">{hint}</p>}
+  </div>
+);
 
 const ProjectFormContainer = ({
-  projectData = initProjectData,
+  projectData = {},
   handleChange = () => {},
   submitText = "Submit",
   onSubmitForm = () => {},
-  onRemoveImage = () => {},
   btnLoading = false,
 }) => {
-  const [techStackInputText, setTechStackInputText] = useState("");
+  const [techInput, setTechInput] = useState("");
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      // Pass the file object to handleChange
-      handleChange({
-        target: {
-          name: "projectImg",
-          value: file,
-          type: "file",
-        },
-      });
-    }
+    if (!file) return;
+    handleChange({ target: { name: "projectImg", value: file, type: "file" } });
   };
 
-  const onAddTechStack = (e) => {
+  const onAddTech = (e) => {
     e.preventDefault();
-    if (!techStackInputText) return;
+    if (!techInput.trim()) return;
     handleChange({
       target: {
         name: "techStack",
-        value: [...projectData.techStack, techStackInputText],
+        value: [...(projectData.techStack ?? []), techInput.trim()],
       },
     });
-    setTechStackInputText("");
+    setTechInput("");
   };
 
-  const onDeleteTechStack = (e, index) => {
+  const onRemoveTech = (e, i) => {
     e.preventDefault();
-    const updatedTechStack = projectData.techStack.filter(
-      (_, i) => i !== index
-    );
     handleChange({
       target: {
         name: "techStack",
-        value: updatedTechStack,
+        value: (projectData.techStack ?? []).filter((_, idx) => idx !== i),
       },
     });
   };
+
+  const clearImage = (e) => {
+    e.preventDefault();
+    handleChange({ target: { name: "projectImg", value: "", type: "text" } });
+  };
+
+  const imgSrc = projectData.projectImg
+    ? typeof projectData.projectImg === "string"
+      ? projectData.projectImg
+      : URL.createObjectURL(projectData.projectImg)
+    : null;
 
   return (
-    <form className="mt-6 space-y-6" onSubmit={onSubmitForm}>
-      <div>
-        {projectData.projectImg ? (
-          <div className="relative grid grid-cols-6">
-            <div className="relative col-span-6 md:col-span-4 lg:col-span-2">
-              <img
-                className="w-full aspect-video object-cover rounded-lg"
-                src={
-                  typeof projectData.projectImg === "string"
-                    ? projectData.projectImg
-                    : URL.createObjectURL(projectData.projectImg)
-                }
-                alt="Project preview"
-              />
-              <button
-                type="button"
-                onClick={onRemoveImage}
-                className="absolute top-2 right-2 bg-black/50 rounded-full p-1 hover:bg-black/70 transition-colors"
-              >
-                <XCircleIcon className="h-8 w-8 text-white" />
+    <form onSubmit={onSubmitForm} className="flex flex-col gap-6">
+
+      {/* ── Image upload ── */}
+      <Field label="Project Image">
+        {imgSrc ? (
+          <div className="relative rounded-2xl overflow-hidden aspect-video max-w-lg border border-white/10 group">
+            <img src={imgSrc} alt="Project preview" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <button type="button" onClick={clearImage}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/80 text-white text-xs font-semibold">
+                <LuX /> Remove Image
               </button>
             </div>
           </div>
         ) : (
-          <div>
-            <label
-              htmlFor="cover-photo"
-              className="block text-sm/6 font-medium text-white"
-            >
-              Project Image
-            </label>
-            <div className="mt-2 flex justify-center rounded-lg border border-dashed border-white/25 px-6 py-10">
-              <div className="text-center">
-                <PhotoIcon
-                  aria-hidden="true"
-                  className="mx-auto size-12 text-gray-600"
-                />
-                <div className="mt-4 flex text-sm/6 text-gray-400">
-                  <label
-                    htmlFor="projectImg"
-                    className="relative cursor-pointer rounded-md bg-transparent font-semibold text-indigo-400 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-indigo-500 hover:text-indigo-300"
-                  >
-                    <span>Upload a file</span>
-                    <input
-                      id="projectImg"
-                      name="projectImg"
-                      type="file"
-                      className="sr-only"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                    />
-                  </label>
-                  <p className="pl-1">or drag and drop</p>
-                </div>
-                <p className="text-xs/5 text-gray-400">
-                  PNG, JPG, GIF up to 10MB
-                </p>
-              </div>
+          <label htmlFor="projectImg"
+            className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-white/15 hover:border-orange-500/40 bg-white/3 hover:bg-orange-500/5 transition-all cursor-pointer py-12 px-6 max-w-lg">
+            <LuImage className="text-3xl text-white/20" />
+            <div className="text-center">
+              <p className="text-sm font-semibold text-orange-400">Upload image</p>
+              <p className="text-xs text-white/30 mt-1">PNG, JPG up to 10MB</p>
             </div>
-          </div>
+            <input id="projectImg" name="projectImg" type="file" className="sr-only" accept="image/*" onChange={handleImageChange} />
+          </label>
         )}
+      </Field>
+
+      {/* ── Two-col layout for name + category ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Field label="Project Name">
+          <input name="name" type="text" required placeholder="e.g. Portfolio Website"
+            value={projectData.name ?? ""} onChange={handleChange} className={inputClass} />
+        </Field>
+        <Field label="Category">
+          <input name="category" type="text" placeholder="e.g. Full Stack, AI, Mobile"
+            value={projectData.category ?? ""} onChange={handleChange} className={inputClass} />
+        </Field>
       </div>
 
-      {/* project name */}
-      <div>
-        <label
-          htmlFor="name"
-          className="block text-sm/6 font-medium text-white"
-        >
-          Project Name
-        </label>
-        <div className="mt-2">
-          <div className="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500">
-            <input
-              id="name"
-              name="name"
-              type="text"
-              value={projectData.name}
-              onChange={handleChange}
-              placeholder="Enter project name"
-              required
-              className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-none sm:text-sm/6"
-            />
-          </div>
-        </div>
-      </div>
+      {/* ── Description ── */}
+      <Field label="Description" hint="Write a concise summary of the project goals and outcomes.">
+        <textarea name="desc" rows={4} required placeholder="What does this project do?..."
+          value={projectData.desc ?? ""} onChange={handleChange}
+          className={`${inputClass} resize-none`} />
+      </Field>
 
-      {/* project category */}
-      <div>
-        <label
-          htmlFor="category"
-          className="block text-sm/6 font-medium text-white"
-        >
-          Project Category
-        </label>
-        <div className="mt-2">
-          <div className="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500">
-            <input
-              id="category"
-              name="category"
-              type="text"
-              value={projectData.category}
-              onChange={handleChange}
-              placeholder="Enter project category"
-              className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-none sm:text-sm/6"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* project description */}
-      <div>
-        <label
-          htmlFor="desc"
-          className="block text-sm/6 font-medium text-white"
-        >
-          Project Description
-        </label>
-        <div className="mt-2">
-          <textarea
-            id="desc"
-            name="desc"
-            value={projectData.desc}
-            onChange={handleChange}
-            placeholder="Write a few sentences about your project..."
-            rows={4}
-            required
-            className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
-          />
-        </div>
-        <p className="mt-3 text-sm/6 text-gray-400">
-          Write a few sentences about your project.
-        </p>
-      </div>
-
-      {/* tech stack */}
-      <div>
-        <label
-          htmlFor="techStack"
-          className="block text-sm/6 font-medium text-white"
-        >
-          Tech Stack
-        </label>
-        {projectData?.techStack?.length > 0 && (
-          <ul className="flex gap-2 my-3 flex-wrap">
-            {projectData.techStack.map((tech, index) => (
-              <li
-                key={index}
-                className="bg-white/5 p-1 text-sm rounded px-2 relative flex items-center"
-              >
-                <p>{tech}</p>
-                <button
-                  type="button"
-                  onClick={(e) => onDeleteTechStack(e, index)}
-                  className="border-l pl-2 ml-2 border-white/25 text-gray-400 hover:text-gray-200"
-                >
-                  <HiMiniXMark className="text-white" />
+      {/* ── Tech Stack ── */}
+      <Field label="Tech Stack">
+        {(projectData.techStack?.length ?? 0) > 0 && (
+          <div className="flex flex-wrap gap-2 mb-2">
+            {projectData.techStack.map((tech, i) => (
+              <span key={i}
+                className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-orange-500/10 border border-orange-500/25 text-orange-300/90">
+                {tech}
+                <button type="button" onClick={(e) => onRemoveTech(e, i)}
+                  className="hover:text-red-400 transition-colors">
+                  <HiMiniXMark />
                 </button>
-              </li>
+              </span>
             ))}
-          </ul>
+          </div>
         )}
-        <div className="grid grid-cols-12 gap-2">
-          <input
-            type="text"
-            id="techStack"
-            name="techStack"
-            value={techStackInputText} 
-            onChange={(e) => setTechStackInputText(e.target.value)}
-            placeholder="Add a technology (e.g., React, Node.js)"
-            className="block col-span-6 md:col-end-3  rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
-          />
-          <button
-            type="button"
-            onClick={onAddTechStack}
-            className="rounded-md col-span-3 md:col-span-2 lg:col-span-1 bg-indigo-500 px-4 py-1.5 text-base font-medium text-white hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm/6"
-          >
-            Add
+        <div className="flex gap-2">
+          <input type="text" placeholder="e.g. React, Node.js, MongoDB"
+            value={techInput} onChange={(e) => setTechInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && onAddTech(e)}
+            className={`${inputClass} flex-1`} />
+          <button type="button" onClick={onAddTech}
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-orange-500/10 border border-orange-500/25 text-orange-400 hover:bg-orange-500 hover:text-white text-sm font-semibold transition-all cursor-pointer whitespace-nowrap">
+            <LuPlus /> Add
           </button>
         </div>
+      </Field>
+
+      {/* ── Links row ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Field label="GitHub / Source Code">
+          <input name="sourceCode" type="url" placeholder="https://github.com/…"
+            value={projectData.sourceCode ?? ""} onChange={handleChange} className={inputClass} />
+        </Field>
+        <Field label="Live Site URL">
+          <input name="siteLink" type="url" placeholder="https://yourproject.com"
+            value={projectData.siteLink ?? ""} onChange={handleChange} className={inputClass} />
+        </Field>
       </div>
 
-      {/* source code */}
-      <div>
-        <label
-          htmlFor="sourceCode"
-          className="block text-sm/6 font-medium text-white"
-        >
-          Source Code Link
-        </label>
-        <div className="mt-2">
-          <div className="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500">
-            <input
-              id="sourceCode"
-              name="sourceCode"
-              type="url"
-              placeholder="e.g., https://github.com/username/repo"
-              onChange={handleChange}
-              value={projectData.sourceCode}
-              required
-              className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-none sm:text-sm/6"
-            />
-          </div>
-        </div>
-      </div>
+      {/* ── Display Order ── */}
+      <Field label="Display Order" hint="Lower numbers appear first in the portfolio.">
+        <input name="order" type="number" min={0} placeholder="e.g. 1"
+          value={projectData.order ?? 0} onChange={handleChange}
+          className={`${inputClass} max-w-xs`} />
+      </Field>
 
-      {/* live link */}
-      <div>
-        <label
-          htmlFor="siteLink"
-          className="block text-sm/6 font-medium text-white"
-        >
-          Project Live Link
-        </label>
-        <div className="mt-2">
-          <div className="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500">
-            <input
-              id="siteLink"
-              name="siteLink"
-              type="url"
-              placeholder="e.g., https://yourproject.com"
-              required
-              value={projectData.siteLink}
-              onChange={handleChange}
-              className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-none sm:text-sm/6"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* display order */}
-      <div>
-        <label
-          htmlFor="order"
-          className="block text-sm/6 font-medium text-white"
-        >
-          Project Display Order
-        </label>
-        <div className="mt-2">
-          <div className="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500">
-            <input
-              id="order"
-              name="order"
-              type="number"
-              placeholder="e.g., 1"
-              onChange={handleChange}
-              value={projectData.order}
-              required
-              className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-none sm:text-sm/6"
-            />
-          </div>
-        </div>
-        <p className="mt-3 text-sm/6 text-gray-400">
-          Lower numbers appear first in the project list.
-        </p>
-      </div>
-
-      <button
-        type="submit"
-        disabled={btnLoading}
-        className="rounded-md w-full bg-indigo-500 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {btnLoading ? "Loading..." : submitText}
+      {/* ── Submit ── */}
+      <button type="submit" disabled={btnLoading}
+        className="flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white text-sm font-semibold transition-colors shadow-lg shadow-orange-500/20 cursor-pointer">
+        {btnLoading
+          ? <><ColorRing height="18" width="18" colors={["#fff","#fff","#fff","#fff","#fff"]} /> Saving…</>
+          : <><LuUpload className="text-sm" /> {submitText}</>}
       </button>
     </form>
   );

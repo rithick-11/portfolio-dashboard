@@ -1,93 +1,125 @@
 import React, { useEffect, useState } from "react";
-import { ColorRing } from "react-loader-spinner";
+import { Navbar } from "../../Components";
+import { LuUsers, LuMail, LuCalendar, LuRefreshCw } from "react-icons/lu";
+import { motion } from "framer-motion";
+import { format } from "date-fns";
 
-const domainUrl = {
-  loaclHost: "http://localhost:3010",
-  cloud: "https://portfolio-server-9ly0.onrender.com",
-  vercel:'https://portfolio-server-pink-seven.vercel.app'
-};
-
-const apiStatusconstan = {
-  initial: "intial",
-  loading: "loading",
-  success: "success",
-  fail: "fail",
-  errMsg: "",
-};
-
-const apiStateInit = {
-  status: apiStatusconstan.initial,
-  errMsg: "",
-  data: {},
-};
+const API = "https://portfolio-server-pink-seven.vercel.app";
+const ease = [0.25, 0.46, 0.45, 0.94];
 
 const Users = () => {
+  const [state, setState] = useState({ status: "idle", data: null, error: "" });
 
-    const [apiRes, setApiRes] = useState(apiStateInit);
-    
-
-  const getUsersData = async () => {
-    setApiRes((pre) => ({ ...pre, status: apiStatusconstan.loading }));
+  const fetchUsers = async () => {
+    setState((p) => ({ ...p, status: "loading" }));
     try {
-      const res = await fetch(`${domainUrl.vercel}/admin/user-detial`);
+      const res  = await fetch(`${API}/admin/user-detial`);
       const data = await res.json();
-      setApiRes((pre) => ({
-        ...pre,
-        status: apiStatusconstan.success,
-        data: data,
-      }));
-    } catch (err) {
-      console.log(err);
+      setState({ status: "success", data, error: "" });
+    } catch {
+      setState({ status: "error", data: null, error: "Failed to load users." });
     }
   };
 
-  useEffect(() => {getUsersData()}, []);
-
-  const renderUserListView = () => {
-    const {total, users} = apiRes.data
-    
-    return(
-        <div className="mt-8">
-            <h1 className="text-md font-light">total user's : <span className="text-blue-500 font-bold text-lg">{total}</span></h1>
-            <ul className="flex flex-col gap-4 mt-5">
-                {users.map((each,i) => <li key={each._id} className="card px-3 py-1">
-                    <h1>Name: {each.name}</h1>
-                    <h1>Username: {each.username}</h1>
-                    <h1>Email: {each.email}</h1>
-                    <h1>createdAt: {new Date(each.createdAt).toLocaleString()}</h1>
-                </li>)}
-            </ul>
-        </div>
-    )
-  }
-
-  const renderView = () => {
-    switch (apiRes.status) {
-        case apiStatusconstan.success:
-          return renderUserListView()
-        case apiStatusconstan.fail:
-          return <p>can not fetch data</p>;
-        case apiStatusconstan.loading:
-          return (
-            <div className="h-[60vh] w-[80%] flex justify-center items-center">
-                <ColorRing
-              height="18"
-              width="18"
-              ariaLabel="color-ring-loading"
-              colors={["#fff", "#fff", "#fff", "#fff", "#fff"]}
-            />
-            </div>
-          );
-        default:
-          return null;
-      }
-  }
+  useEffect(() => { fetchUsers(); }, []);
 
   return (
-    <section className="px-4 sm:px-10 md:px-26 my-4 text-white">
-      <h1 className="text-2xl font-medium">User Detial</h1>
-      {renderView()}
-    </section>
+    <div className="dash-content">
+      <Navbar />
+      <main className="container-width py-8">
+
+        {/* ── Header ── */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-white">Users</h1>
+            <p className="text-sm text-white/40 mt-1">All registered portfolio users</p>
+          </div>
+          <button
+            onClick={fetchUsers}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 bg-white/5 text-white/60 hover:text-white text-sm transition-all cursor-pointer"
+          >
+            <LuRefreshCw className={`text-sm ${state.status === "loading" ? "animate-spin" : ""}`} />
+            Refresh
+          </button>
+        </div>
+
+        {/* ── States ── */}
+        {state.status === "loading" && (
+          <div className="glass-card p-12 text-center text-white/30 animate-pulse">
+            Loading users…
+          </div>
+        )}
+        {state.status === "error" && (
+          <div className="glass-card p-8 text-center text-red-400/70">{state.error}</div>
+        )}
+
+        {/* ── User list ── */}
+        {state.status === "success" && (
+          <>
+            <div className="flex items-center gap-2 mb-5">
+              <span className="text-sm text-white/40">Total:</span>
+              <span className="text-sm font-bold text-orange-500">{state.data?.total ?? 0} users</span>
+            </div>
+
+            <div className="glass-card overflow-hidden">
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Joined</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {state.data?.users?.length === 0 && (
+                    <tr>
+                      <td colSpan="5" className="text-center py-10 text-white/25">No users yet</td>
+                    </tr>
+                  )}
+                  {state.data?.users?.map((user, i) => (
+                    <motion.tr
+                      key={user._id}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, ease, delay: i * 0.04 }}
+                    >
+                      <td className="text-white/30 font-mono">{i + 1}</td>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          <div className="h-7 w-7 rounded-full bg-orange-500/15 border border-orange-500/25 flex items-center justify-center text-xs font-bold text-orange-400 flex-shrink-0">
+                            {user.name?.[0]?.toUpperCase()}
+                          </div>
+                          <span className="text-white/85 font-medium">{user.name}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <span className="font-mono text-xs bg-white/5 border border-white/8 px-2 py-0.5 rounded-full text-white/60">
+                          @{user.username}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="flex items-center gap-1.5 text-white/50">
+                          <LuMail className="text-[10px]" />
+                          {user.email}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="flex items-center gap-1.5 text-white/40">
+                          <LuCalendar className="text-[10px]" />
+                          {format(new Date(user.createdAt), "d MMM yyyy")}
+                        </span>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+      </main>
+    </div>
   );
 };
 

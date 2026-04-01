@@ -1,277 +1,136 @@
-
 import React, { useState } from "react";
 import Cookies from "js-cookie";
-import { ColorRing} from "react-loader-spinner";
-import {motion} from "framer-motion"
+import { ColorRing } from "react-loader-spinner";
+import { motion } from "framer-motion";
 import { Navigate, useNavigate } from "react-router-dom";
+import { FaUser, FaLock } from "react-icons/fa";
 
-const formDataInit = {
-  username: "",
-  name: "",
-  email: "",
-  password: "",
-};
+const ease = [0.25, 0.46, 0.45, 0.94];
 
-const apiStatusconstan = {
-  initial: "intial",
-  loading: "loading",
-  success: "success",
-  fail: "fail",
-  errMsg: "",
-};
+const API = "https://portfolio-server-pink-seven.vercel.app";
 
-const apiStateInit = {
-  status: apiStatusconstan.initial,
-  errMsg: "",
-  data:{}
-};
+const inputClass =
+  "w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 focus:border-orange-500/60 focus:bg-orange-500/5 outline-none text-sm text-white placeholder:text-white/25 transition-all";
 
-const Login = (props) => {
-  const [loginForm, setLoginForm] = useState(true);
-  const [apiRes, setApiRes] = useState(apiStateInit);
-  const [loginFormData, setLoginFormData] = useState(formDataInit);
+const Field = ({ label, id, icon, children }) => (
+  <div className="flex flex-col gap-1.5">
+    <label htmlFor={id} className="text-xs font-semibold uppercase tracking-wider text-white/40 flex items-center gap-1.5">
+      {icon}{label}
+    </label>
+    {children}
+  </div>
+);
 
-  const navigate = useNavigate()
+const STATUS = { idle: "idle", loading: "loading" };
 
-  const handleLoginForm = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
-    setLoginFormData((pre) => ({ ...pre, [name]: value }));
-  };
+const Login = () => {
+  const navigate = useNavigate();
+  const [form, setForm]     = useState({ username: "", password: "" });
+  const [status, setStatus] = useState(STATUS.idle);
+  const [error, setError]   = useState("");
 
-  const domainUrl = {
-    loaclHost: "http://localhost:3010",
-    cloud: "https://portfolio-server-9ly0.onrender.com",
-    vercel:'https://portfolio-server-pink-seven.vercel.app'
-  };
+  if (Cookies.get("user_token") !== undefined) return <Navigate to="/" />;
 
-  const toSingUP = async (e) => {
+  const handleChange = (e) =>
+    setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setApiRes((prev) => ({ ...prev, status: apiStatusconstan.loading }));
-    const signUpApiUrl = `${domainUrl.vercel}/user/singup`;
-    const option = {
-      method: "POST",
-      body: JSON.stringify(loginFormData),
-      headers: {
-        "Content-type": "application/json",
-      },
-    };
-
-    const res = await fetch(signUpApiUrl, option);
-    const data = await res.json();
-    console.log(res);
-    if (res.status === 200) {
-      Cookies.set("user_token", data.token, { expires: 7 });
-      setLoginForm(true);
-      setApiRes((prev) => ({
-        ...prev,
-        status: apiStatusconstan.success,
-        errMsg: data.msg,
-      }));
-    } else if (res.status === 401) {
-      setApiRes((prev) => ({
-        ...prev,
-        status: apiStatusconstan.fail,
-        errMsg: data.msg,
-      }));
+    setStatus(STATUS.loading);
+    setError("");
+    try {
+      const res = await fetch(`${API}/admin/login`, {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (res.status === 200) {
+        Cookies.set("user_token", data.token, { expires: 2 });
+        navigate("/");
+      } else {
+        setError(data.msg || "Login failed.");
+      }
+    } catch {
+      setError("Cannot connect to server.");
+    } finally {
+      setStatus(STATUS.idle);
     }
   };
-
-  const toLogin = async (e) => {
-    e.preventDefault();
-    setApiRes((prev) => ({ ...prev, status: apiStatusconstan.loading }));
-
-    const loginApi = `${domainUrl.vercel}/admin/login`;
-    const option = {
-      method: "POST",
-      body: JSON.stringify({
-        username: loginFormData.username,
-        password: loginFormData.password,
-      }),
-      headers: {
-        "Content-type": "application/json",
-      },
-    };
-
-    const res = await fetch(loginApi, option);
-    const data = await res.json();
-    if (res.status === 200) {
-      Cookies.set("user_token", data.token, { expires: 2 });
-      setApiRes((prev) => ({
-        ...prev,
-        status: apiStatusconstan.success,
-        errMsg: data.msg,
-      }));
-      navigate("/")
-    } else if (res.status === 404) {
-      setApiRes((prev) => ({
-        ...prev,
-        status: apiStatusconstan.fail,
-        errMsg: data.msg,
-      }));
-    }
-  };
-
-  if(Cookies.get("user_token") !== undefined){
-    return <Navigate to='/' />
-}
-
 
   return (
-    <motion.section
-      initial={{x:"100%"}}
-      animate={{x:0}}
-      className="h-screen w-screen text-white overflow-x-hidden bg-black/65 flex items-center justify-center z-30 backdrop-blur-sm">
-      <div className="min-h-[70%] w-[75%] sm:h-[26rem] sm:w-96 sm:px-3 bg-white/10  border-[.5px] border-orange-400 rounded-lg flex flex-col justify-between py-2 px-2">
-        <div className="px-2 py-3 flex items-center justify-between">
-          <h1 className="text-xl font-medium">
-            {loginForm ? "Login" : "Sign up"}
-          </h1>
-        </div>
+    <div className="min-h-screen flex items-center justify-center px-4 overflow-x-hidden">
+      {/* Background */}
+      <div className="fixed inset-0 bg-[#0a0a0c] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(249,115,22,0.12),transparent)] -z-10" />
+      <div className="fixed inset-0 -z-10 pointer-events-none"
+        style={{ backgroundImage: "linear-gradient(to right,rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,0.025) 1px,transparent 1px)", backgroundSize: "40px 40px" }}
+      />
 
-        {loginForm ? (
-          <form className="px-6 flex flex-col gap-2" onSubmit={toLogin}>
-            <div className="flex flex-col gap-1">
-              <label htmlFor="username" className="text-sm">
-                Username *
-              </label>
+      <div className="w-full max-w-sm">
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease }}
+          className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-7"
+        >
+          {/* Logo */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center h-12 w-12 rounded-2xl bg-orange-500/15 border border-orange-500/25 mb-4">
+              <span className="text-orange-500 font-bold text-xl">R</span>
+            </div>
+            <h1 className="text-xl font-bold text-white">Admin Login</h1>
+            <p className="text-xs text-white/35 mt-1">Portfolio Dashboard</p>
+          </div>
+
+          <form onSubmit={handleLogin} className="flex flex-col gap-4">
+            <Field label="Username" id="username" icon={<FaUser className="text-[10px]" />}>
               <input
                 id="username"
-                onChange={handleLoginForm}
-                type="text"
                 name="username"
-                placeholder="Enter username"
+                type="text"
                 required
-                value={loginFormData.username}
-                className="text-sxl px-[12px] py-[4px] outline-none rounded-md bg-black/50"
+                placeholder="Admin username"
+                value={form.username}
+                onChange={handleChange}
+                className={inputClass}
               />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label htmlFor="password" className="text-sm">
-                Password *
-              </label>
+            </Field>
+            <Field label="Password" id="password" icon={<FaLock className="text-[10px]" />}>
               <input
                 id="password"
-                onChange={handleLoginForm}
-                type="password"
                 name="password"
-                value={loginFormData.password}
-                placeholder="Enter your password"
-                required
-                className="text-sxl px-[12px] py-[4px] outline-none rounded-md bg-black/50"
-              />
-            </div>
-            <button className="bg-orange-500 text-md flex items-center  py-[2px] font-medium rounded-md self-start mt-4 px-2">
-              Login
-              {apiRes.status === apiStatusconstan.loading && (
-                <ColorRing
-                  height="18"
-                  width="18"
-                  ariaLabel="color-ring-loading"
-                  colors={["#fff", "#fff", "#fff", "#fff", "#fff"]}
-                />
-              )}
-            </button>
-          </form>
-        ) : (
-          <form className="px-6 flex flex-col gap-2" onSubmit={toSingUP}>
-            <p className="text-xs text-orange-500 font-medium">You can use dummy data for sing up</p>
-            <div className="flex flex-col gap-1">
-              <label htmlFor="username" className="text-sm">
-                Username *
-              </label>
-              <input
-                id="username"
-                onChange={handleLoginForm}
-                type="text"
-                name="username"
-                value={loginFormData.username}
-                placeholder="Enter username"
-                required
-                className="text-sxl px-[12px] py-[4px] outline-none rounded-md bg-black/50"
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label htmlFor=" " className="text-sm">
-                Name *
-              </label>
-              <input
-                id="name"
-                onChange={handleLoginForm}
-                type="text"
-                name="name"
-                value={loginFormData.name}
-                placeholder="Enter full name"
-                required
-                className="text-sxl px-[12px] py-[4px] outline-none rounded-md bg-black/50"
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label htmlFor="email" className="text-sm">
-                Email *
-              </label>
-              <input
-                id="email"
-                onChange={handleLoginForm}
-                type="text"
-                name="email"
-                value={loginFormData.email}
-                placeholder="Enter e-mail"
-                required
-                className="text-sxl px-[12px] py-[4px] outline-none rounded-md bg-black/50"
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label htmlFor="password" className="text-sm">
-                Password *
-              </label>
-              <input
-                id="password"
-                onChange={handleLoginForm}
                 type="password"
-                name="password"
-                value={loginFormData.password}
-                placeholder="Create new password"
                 required
-                className="text-sxl px-[12px] py-[4px] outline-none rounded-md bg-black/50"
+                placeholder="Your password"
+                value={form.password}
+                onChange={handleChange}
+                className={inputClass}
               />
-            </div>
-            <button className="bg-orange-500 text-md flex items-center py-[2px] font-medium rounded-md self-start mt-4 px-2">
-              Sign Up
-              {apiRes.status === apiStatusconstan.loading && (
-                <ColorRing
-                  height="18"
-                  width="18"
-                  ariaLabel="color-ring-loading"
-                  colors={["#fff", "#fff", "#fff", "#fff", "#fff"]}
-                />
-              )}
-            </button>
-          </form>
-        )}
+            </Field>
 
-        <div className="px-2 py-3 flex items-center justify-between">
-          <p
-            className={`text-sm font- ${
-              apiRes.status === apiStatusconstan.success
-                ? "text-blue-500"
-                : "text-[#FF0000]"
-            }`}
-          >
-            {apiRes.status === apiStatusconstan.fail && "*"}{apiRes.errMsg}
-          </p>
-          <button
-            onClick={() => {
-              setLoginForm((pre) => !pre);
-              setLoginFormData(formDataInit);
-              setApiRes(apiStateInit);
-            }}
-          >
-            {loginForm ? "Sign Up" : "Login"}
-          </button>
-        </div>
+            {error && (
+              <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+                ✕ {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={status === STATUS.loading}
+              className="mt-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white text-sm font-semibold transition-colors shadow-lg shadow-orange-500/25 cursor-pointer"
+            >
+              {status === STATUS.loading ? (
+                <><ColorRing height="18" width="18" colors={["#fff","#fff","#fff","#fff","#fff"]} /> Signing in…</>
+              ) : "Sign In"}
+            </button>
+          </form>
+        </motion.div>
+
+        <p className="text-center text-xs text-white/20 mt-5">
+          Rithick Portfolio · Admin Only
+        </p>
       </div>
-    </motion.section>
+    </div>
   );
 };
 

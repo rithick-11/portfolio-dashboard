@@ -1,92 +1,99 @@
 import React, { useEffect, useState } from "react";
-import { Navbar, ProjectFormContainer } from "../../Components";
-import { IoConstructOutline } from "react-icons/io5";
-import { useParams } from "react-router-dom";
+import { Navbar } from "../../Components";
+import { ProjectFormContainer } from "../../Components";
+import { LuPencil, LuArrowLeft } from "react-icons/lu";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import useStore from "../../store/useStore";
 import { apiStatus } from "../../store/api";
-
-const initProjectData = {
-  name: "loading...",
-  desc: "loading...",
-  category: "",
-  techStack: [],
-  projectImg:
-    "https://res.cloudinary.com/dwpmsw2i4/image/upload/v1740225007/DALL_E_2025-01-23_20.09.44_-_A_conceptual_illustration_of_a_RESTful_API_for_a_blog_management_system._The_design_includes_a_central_node_labeled_API_connected_to_user_roles_Adm_xi76et.webp",
-  siteLink: "",
-  sourceCode: "",
-  order: 0,
-};
+import { toast } from "react-hot-toast";
 
 const ProjectEdit = () => {
   const { id } = useParams();
-  const [project, setProject] = useState(initProjectData);
+  const navigate = useNavigate();
   const { getProjectById, onUpadateProject } = useStore();
-  const [apiState, setApiState] = useState(apiStatus.initial);
-  const [projectImg, setProjectImg] = useState("");
+
+  const [project, setProject]     = useState(null);
+  const [fetchStatus, setFetch]   = useState(apiStatus.loading);
   const [btnLoading, setBtnLoading] = useState(false);
 
-  const getProjectDetails = async () => {
-    try {
-      setApiState(apiStatus.loading);
-      const projectDetails = await getProjectById(id);
-      setProject(projectDetails);
-      setApiState(apiStatus.success);
-    } catch (error) {
-      console.log(error);
-      setApiState(apiStatus.error);
-    }
-  };
-
   useEffect(() => {
-    getProjectDetails();
-  }, []);
+    const load = async () => {
+      try {
+        const data = await getProjectById(id);
+        setProject(data);
+        setFetch(apiStatus.success);
+      } catch {
+        setFetch(apiStatus.error);
+      }
+    };
+    load();
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
     const val = type === "number" ? parseInt(value) : value;
-    setProject({ ...project, [name]: val });
+    setProject((p) => ({ ...p, [name]: val }));
   };
 
-  const onUpdateProject = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setBtnLoading(true);
     try {
-      const res = await onUpadateProject(id, project);
-    } catch (error) {
-      console.log(error);
+      await onUpadateProject(id, project);
+      toast.success("Project updated!");
+      navigate("/project");
+    } catch {
+      toast.error("Failed to update project.");
+    } finally {
+      setBtnLoading(false);
     }
-    setBtnLoading(false);
   };
 
   return (
-    <section className="container-width pb-5">
+    <div className="dash-content">
       <Navbar />
-      <div className="flex items-center justify-between my-4">
-        <h1 className="text-lg font-normal flex items-center gap-2">
-          <IoConstructOutline className="text-3xl" />
-          Edit project
-        </h1>
-      </div>
-      {apiState === apiStatus.loading && (
-        <div className="text-center text-lg font-medium my-10">Loading...</div>
-      )}
-      {apiState === apiStatus.error && (
-        <div className="text-center text-lg font-medium my-10">
-          Something went wrong!
+      <main className="container-width py-8 pb-16">
+        {/* Header */}
+        <div className="mb-8">
+          <Link to="/project"
+            className="inline-flex items-center gap-2 text-sm text-white/40 hover:text-white mb-4 transition-colors group">
+            <LuArrowLeft className="group-hover:-translate-x-1 transition-transform" />
+            Back to Projects
+          </Link>
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+              <LuPencil className="text-orange-500 text-base" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-white">Edit Project</h1>
+              <p className="text-xs text-white/35 mt-0.5">{project?.name ?? "Loading…"}</p>
+            </div>
+          </div>
         </div>
-      )}
-      {apiState === apiStatus.success && (
-        <ProjectFormContainer
-          projectData={project}
-          handleChange={handleChange}
-          submitText={"Update Project"}
-          onSubmitForm={onUpdateProject}
-          projectImg={projectImg}
-          setProjectImg={setProjectImg}
-          btnLoading={btnLoading}
-        />
-      )}
-    </section>
+
+        {fetchStatus === apiStatus.loading && (
+          <div className="glass-card p-12 text-center text-white/30 animate-pulse max-w-3xl">
+            Loading project data…
+          </div>
+        )}
+        {fetchStatus === apiStatus.error && (
+          <div className="glass-card p-10 text-center text-red-400/70 max-w-3xl">
+            Failed to load project. <Link to="/project" className="text-orange-400 hover:underline">Go back</Link>
+          </div>
+        )}
+        {fetchStatus === apiStatus.success && project && (
+          <div className="glass-card p-6 max-w-3xl">
+            <ProjectFormContainer
+              projectData={project}
+              handleChange={handleChange}
+              submitText="Update Project"
+              onSubmitForm={onSubmit}
+              btnLoading={btnLoading}
+            />
+          </div>
+        )}
+      </main>
+    </div>
   );
 };
 
