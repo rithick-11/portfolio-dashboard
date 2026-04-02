@@ -8,13 +8,8 @@ export const apiStatus = {
   error: "error",
 };
 
-const baseUrl = {
-  development: "http://localhost:3010",
-  production: "https://portfolio-server-pink-seven.vercel.app",
-}
-
 const api = axios.create({
-  baseURL: baseUrl.production,
+  baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:3010",
   headers: {
     Authorization: `Bearer ${Cookies.get("token")}`,
   },

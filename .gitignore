@@ -5,7 +5,11 @@
 /.pnp
 .pnp.js
 
-# testing
+# env — never commit secrets
+.env
+.env*.local
+
+
 /coverage
 
 # production

@@ -7,7 +7,7 @@ import { FaUser, FaLock } from "react-icons/fa";
 
 const ease = [0.25, 0.46, 0.45, 0.94];
 
-const API = "https://portfolio-server-pink-seven.vercel.app";
+const API = import.meta.env.VITE_API_URL ?? "http://localhost:3010";
 
 const inputClass =
   "w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 focus:border-orange-500/60 focus:bg-orange-500/5 outline-none text-sm text-white placeholder:text-white/25 transition-all";

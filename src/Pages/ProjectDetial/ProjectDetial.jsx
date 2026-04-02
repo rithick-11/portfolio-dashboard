@@ -7,7 +7,7 @@ import {
 } from "react-icons/lu";
 import { motion } from "framer-motion";
 
-const API = "https://portfolio-server-pink-seven.vercel.app";
+const API = import.meta.env.VITE_API_URL ?? "http://localhost:3010";
 const ease = [0.25, 0.46, 0.45, 0.94];
 
 const ProjectDetial = () => {
